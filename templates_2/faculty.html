@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Management - Timetable System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-bg: #f4f7f6;
+            --card-bg: #ffffff;
+            --accent-color: #4e73df;
+            --accent-hover: #2e59d9;
+            --text-main: #333333;
+            --text-muted: #858796;
+            --border-color: #e3e6f0;
+            --danger-color: #e74a3b;
+            --input-bg: #ffffff;
+            --input-border: #ced4da;
+            --input-text: #495057;
+            --card-header-bg: #f8f9fc;
+            --navbar-bg: #ffffff;
+            --navbar-text: #212529;
+        }
+
+        html[data-theme="dark"] {
+            --primary-bg: #1a1a2e;
+            --card-bg: #16213e;
+            --accent-color: #6c7ff0;
+            --accent-hover: #8a9ff5;
+            --text-main: #e4e4e7;
+            --text-muted: #a1a1a1;
+            --border-color: #2d3748;
+            --danger-color: #f56565;
+            --input-bg: #0f3460;
+            --input-border: #2d3748;
+            --input-text: #e4e4e7;
+            --card-header-bg: #0f3460;
+            --navbar-bg: #0f1419;
+            --navbar-text: #e4e4e7;
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-main);
+            padding-bottom: 50px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .config-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .card-header-custom {
+            background-color: var(--card-header-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 25px;
+            font-weight: 600;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-body-custom {
+            padding: 25px;
+        }
+
+        .form-label {
+            font-weight: 500;
+            font-size: 0.95em;
+            color: var(--input-text);
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid var(--input-border);
+            padding: 10px 15px;
+            background-color: var(--input-bg);
+            color: var(--input-text);
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+            background-color: var(--input-bg);
+            color: var(--input-text);
+        }
+
+        .theme-toggle-btn {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 8px;
+        }
+
+        .table-custom {
+            color: var(--text-main);
+        }
+
+        .table-custom th {
+            background-color: var(--card-header-bg);
+            color: var(--accent-color);
+            border-color: var(--border-color);
+        }
+
+        .table-custom td {
+            border-color: var(--border-color);
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom mb-4" style="box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+        <div class="container">
+            <span class="navbar-brand fw-bold text-primary">
+                <i class="fas fa-calendar-check me-2"></i> Timetable Management
+            </span>
+            <div class="d-flex align-items-center gap-2">
+                <a href="/" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-calendar-alt me-1"></i> Timetable Generator
+                </a>
+                <button class="theme-toggle-btn" id="themeToggle" title="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <a href="/logout" class="btn btn-sm btn-outline-danger">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Page Header -->
+        <div class="text-center mb-4">
+            <h2 class="fw-bold"><i class="fas fa-chalkboard-teacher text-primary me-2"></i> Faculty Directory & Management</h2>
+            <p class="text-muted">Manage faculty members, their subjects, and teaching workload. Data is persistently saved and automatically loaded into the Timetable Generator.</p>
+        </div>
+
+        {% if message %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endif %}
+
+        <div class="row">
+            <!-- Add Faculty Form -->
+            <div class="col-lg-5">
+                <div class="config-card">
+                    <div class="card-header-custom">
+                        <span><i class="fas fa-user-plus me-2"></i> Add New Faculty</span>
+                    </div>
+                    <div class="card-body-custom">
+                        <form action="/faculty/add" method="POST">
+                            <div class="mb-3">
+                                <label for="faculty_name" class="form-label">Faculty Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    <input type="text" class="form-control" id="faculty_name" name="name" placeholder="e.g. Dr. Rajesh Sharma" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="faculty_subject" class="form-label">Subject / Course</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-book"></i></span>
+                                    <input type="text" class="form-control" id="faculty_subject" name="subject" placeholder="e.g. Data Structures" required>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-6">
+                                    <label for="theory_hours" class="form-label">Theory (Hrs/Wk)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                                        <input type="number" class="form-control" id="theory_hours" name="theory_hours" min="0" value="3" required>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <label for="practical_hours" class="form-label">Practical (Hrs/Wk)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-flask"></i></span>
+                                        <input type="number" class="form-control" id="practical_hours" name="practical_hours" min="0" value="1" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
+                                <i class="fas fa-plus-circle me-1"></i> Save Faculty to Database
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Faculty List Table -->
+            <div class="col-lg-7">
+                <div class="config-card">
+                    <div class="card-header-custom">
+                        <span><i class="fas fa-list me-2"></i> Saved Faculty Database ({{ faculty_list|length }})</span>
+                        {% if faculty_list|length > 0 %}
+                        <form action="/faculty/clear" method="POST" onsubmit="return confirm('Are you sure you want to remove all faculty?');" style="margin:0;">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash me-1"></i> Clear All
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    <div class="card-body-custom p-0">
+                        {% if faculty_list and faculty_list|length > 0 %}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-custom mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Faculty Name</th>
+                                        <th>Subject</th>
+                                        <th class="text-center">Theory</th>
+                                        <th class="text-center">Practical</th>
+                                        <th class="text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for fac in faculty_list %}
+                                    <tr>
+                                        <td><strong>{{ loop.index }}</strong></td>
+                                        <td>
+                                            <i class="fas fa-chalkboard-teacher text-primary me-2"></i>
+                                            <strong>{{ fac.name }}</strong>
+                                        </td>
+                                        <td><span class="badge bg-secondary">{{ fac.subject }}</span></td>
+                                        <td class="text-center">{{ fac.theory_hours }} hrs</td>
+                                        <td class="text-center">{{ fac.practical_hours }} hrs</td>
+                                        <td class="text-center">
+                                            <form action="/faculty/delete/{{ loop.index0 }}" method="POST" style="display:inline;">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Faculty" onclick="return confirm('Delete {{ fac.name }}?');">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-users-slash fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No Faculty Added Yet</h5>
+                            <p class="text-muted small">Use the form on the left to add your faculty members. They will be saved permanently and used when generating schedules.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-light p-3 text-center border-top">
+                        <a href="/" class="btn btn-success px-4">
+                            <i class="fas fa-calendar-alt me-2"></i> Open Timetable Generator with this Faculty
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+
+        const initializeTheme = () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                htmlElement.setAttribute('data-theme', savedTheme);
+            }
+            updateThemeIcon();
+        };
+
+        const updateThemeIcon = () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        };
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon();
+        });
+
+        initializeTheme();
+    </script>
+</body>
+
+</html>
