@@ -4,219 +4,582 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generated Timetable</title>
+    <title>Class Time Table - {{ config.class_name }} {{ config.division }}</title>
+
+    <!-- Bootstrap 5 + Font Awesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
     <style>
-        body { background-color: #f4f7f6; font-family: 'Inter','Segoe UI',sans-serif; }
-
-        .section-title {
-            font-weight: 700; color: #2c3e50; margin: 30px 0 15px;
-            border-left: 5px solid #4e73df; padding-left: 12px;
+        :root {
+            --primary-bg: #f4f7f6;
+            --card-bg: #ffffff;
+            --accent-color: #4e73df;
+            --border-color: #333333;
+            --table-border: #222222;
+            --header-maroon: #800000;
+            --header-blue: #003366;
+            --break-bg: #fdf5e6;
+            --practical-hover: #e8f4fd;
         }
 
-        .table-card {
-            background: white; border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,.05); padding: 20px; margin-bottom: 30px;
+        html[data-theme="dark"] {
+            --primary-bg: #1a1a2e;
+            --card-bg: #16213e;
+            --accent-color: #6c7ff0;
+            --table-border: #444455;
+            --break-bg: #2a2a3e;
         }
 
-        .table thead { background-color: #4e73df; color: white; }
+        body {
+            background-color: var(--primary-bg);
+            font-family: 'Times New Roman', Times, 'Segoe UI', serif;
+            color: #111;
+            padding-bottom: 60px;
+        }
 
-        .slot-break { background-color: #ffeeba; font-weight: 600; text-align: center; }
+        /* Top Action / Nav Bar (Hidden in Print) */
+        .top-action-bar {
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-bottom: 1px solid #e3e6f0;
+            padding: 10px 0;
+            margin-bottom: 25px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-        .slot-theory { background-color: #eaf3ff; }
-        .slot-practical { background-color: #e8f8f0; }
-        .slot-free { background-color: #f5f5f5; color: #aaa; font-style: italic; }
+        /* Printable Paper Container */
+        .timetable-paper {
+            background: #ffffff;
+            border: 2px solid #222;
+            border-radius: 4px;
+            padding: 25px 30px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            margin: 0 auto 30px auto;
+            max-width: 1200px;
+            color: #111;
+        }
 
-        .batch-header { background-color: #198754; color: white; }
+        /* Institutional Header Block */
+        .inst-motto {
+            font-size: 0.95rem;
+            font-style: italic;
+            color: #333;
+            margin-bottom: 2px;
+        }
 
-        .nav-pills .nav-link { color: #4e73df; font-weight: 500; border: 1px solid #dee2e6; margin-right: 5px; }
-        .nav-pills .nav-link.active { background-color: #4e73df; color: white; border-color: #4e73df; }
+        .inst-name {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--header-blue);
+            margin-bottom: 2px;
+            letter-spacing: -0.2px;
+        }
 
-        .abbr-badge { font-size: .75em; font-weight: 700; }
-        .subject-text { font-size: .9em; font-weight: 600; color: #2c3e50; }
-        .faculty-text { font-size: .8em; color: #6c757d; }
+        .dept-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--header-maroon);
+            margin-bottom: 4px;
+        }
 
+        .timetable-title-badge {
+            display: inline-block;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #000;
+            border-bottom: 2px solid #000;
+            padding-bottom: 2px;
+            margin-bottom: 14px;
+            letter-spacing: 0.8px;
+        }
+
+        /* Class Metadata Bar */
+        .meta-strip {
+            border: 1px solid #222;
+            border-left: none;
+            border-right: none;
+            padding: 6px 4px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: #fafafa;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .meta-strip span {
+            white-space: nowrap;
+        }
+
+        /* Official Academic Timetable Table */
+        .table-academic {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1.5px solid #222;
+            margin-bottom: 18px;
+        }
+
+        .table-academic th,
+        .table-academic td {
+            border: 1px solid #333;
+            padding: 6px 6px;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 0.88rem;
+            line-height: 1.35;
+        }
+
+        .table-academic th {
+            background-color: #f1f3f5;
+            color: var(--header-maroon);
+            font-weight: 800;
+            font-size: 0.94rem;
+        }
+
+        .time-col {
+            font-weight: 700;
+            background-color: #f8f9fa;
+            white-space: nowrap;
+            width: 135px;
+            font-size: 0.86rem;
+            color: #222;
+        }
+
+        .break-cell {
+            background-color: var(--break-bg);
+            font-weight: 800;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+            padding: 7px !important;
+        }
+
+        /* Cell Content Layouts */
+        .theory-cell {
+            font-weight: 600;
+            color: #111;
+        }
+
+        .theory-subject {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #111;
+        }
+
+        .theory-meta {
+            font-size: 0.83rem;
+            color: #222;
+        }
+
+        /* Practical Batch Entries (All in one cell) */
+        .batch-line {
+            font-size: 0.82rem;
+            text-align: left;
+            padding: 2px 4px;
+            margin: 1px 0;
+            border-radius: 3px;
+            transition: background 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .batch-line .batch-tag {
+            font-weight: 800;
+            color: var(--header-maroon);
+            display: inline-block;
+            min-width: 26px;
+        }
+
+        .batch-line .batch-sub {
+            font-weight: 600;
+            color: #111;
+        }
+
+        .batch-line .batch-fac {
+            color: #333;
+        }
+
+        .batch-line .batch-loc {
+            color: #555;
+            font-size: 0.78rem;
+        }
+
+        /* Highlight specific batch interactive state */
+        .highlighted-batch {
+            background-color: #ffe699 !important;
+            font-weight: 800 !important;
+            border-left: 3px solid #d35400;
+        }
+
+        /* Workload Summary Table */
+        .table-workload {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1.5px solid #222;
+            margin-top: 10px;
+            margin-bottom: 12px;
+        }
+
+        .table-workload th,
+        .table-workload td {
+            border: 1px solid #333;
+            padding: 5px 8px;
+            font-size: 0.84rem;
+        }
+
+        .table-workload th {
+            background-color: #f1f3f5;
+            color: var(--header-maroon);
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .table-workload td.center {
+            text-align: center;
+        }
+
+        .table-workload tr.totals-row {
+            background-color: #f8f9fa;
+            font-weight: 800;
+        }
+
+        /* Reading Note & Signatures */
+        .reading-note {
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin: 8px 0 35px 2px;
+            color: #222;
+        }
+
+        .signatures-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 10px 40px 10px 40px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #111;
+        }
+
+        .signature-block {
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .signature-line {
+            border-top: 1px dashed #444;
+            margin-bottom: 6px;
+        }
+
+        /* Filter Controls */
+        .batch-filter-btn {
+            font-size: 0.82rem;
+            padding: 3px 10px;
+            font-weight: 600;
+        }
+
+        /* ------------------------------------------------------------- */
+        /* PRINT STYLING (Optimized for exact A4 paper matching reference) */
+        /* ------------------------------------------------------------- */
         @media print {
-            .btn-group-custom, nav, .nav-pills-wrap { display: none !important; }
-            .table-card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+            @page {
+                size: A4 portrait;
+                margin: 8mm 8mm 8mm 8mm;
+            }
+
+            body {
+                background: #ffffff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                color: #000 !important;
+            }
+
+            .top-action-bar,
+            .btn,
+            nav {
+                display: none !important;
+            }
+
+            .timetable-paper {
+                box-shadow: none !important;
+                border: 1.5px solid #000 !important;
+                padding: 10px 15px !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                page-break-after: always;
+            }
+
+            .table-academic th,
+            .table-academic td,
+            .table-workload th,
+            .table-workload td {
+                border-color: #000 !important;
+                color: #000 !important;
+            }
+
+            .break-cell {
+                background-color: #f4f4f4 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .inst-name {
+                color: #000 !important;
+            }
+
+            .dept-name {
+                color: #000 !important;
+            }
+
+            .meta-strip {
+                border-color: #000 !important;
+                background: #f9f9f9 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .signatures-row {
+                padding: 20px 20px 5px 20px !important;
+            }
         }
     </style>
 </head>
 
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom" style="box-shadow:0 2px 4px rgba(0,0,0,.1);">
-        <div class="container">
-            <span class="navbar-brand"><i class="fas fa-calendar-check text-primary"></i> Timetable Generator</span>
+
+    <!-- Top Action Navigation Bar (Hidden during print) -->
+    <header class="top-action-bar">
+        <div class="container-fluid px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
             <div class="d-flex align-items-center gap-3">
-                <a href="/faculty" class="btn btn-sm btn-outline-primary"><i class="fas fa-users me-1"></i>Faculty</a>
-                <span class="text-muted"><i class="fas fa-user-circle"></i> {{ session.username }}</span>
-                <a href="/logout" class="btn btn-sm btn-outline-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                <span class="fw-bold text-primary fs-5">
+                    <i class="fas fa-calendar-check me-1"></i> Timetable Generator
+                </span>
+                <span class="badge bg-secondary">{{ config.class_name }} {{ config.division }}</span>
+                <span class="text-muted small">| {{ config.academic_year }}</span>
+            </div>
+
+            <!-- Batch Filter & Actions -->
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <span class="small fw-bold text-muted me-1">Highlight Batch:</span>
+                <div class="btn-group btn-group-sm me-2" role="group">
+                    <button type="button" class="btn btn-outline-secondary batch-filter-btn active" onclick="filterBatch('ALL')">All</button>
+                    {% for b in active_batches %}
+                    <button type="button" class="btn btn-outline-primary batch-filter-btn" onclick="filterBatch('{{ b }}')">{{ b }}</button>
+                    {% endfor %}
+                </div>
+
+                <button onclick="window.print()" class="btn btn-sm btn-success fw-semibold">
+                    <i class="fas fa-print me-1"></i> Print / Save PDF
+                </button>
+                <a href="/" class="btn btn-sm btn-outline-primary fw-semibold">
+                    <i class="fas fa-sliders-h me-1"></i> Modify Settings
+                </a>
+                <a href="/faculty" class="btn btn-sm btn-outline-secondary fw-semibold">
+                    <i class="fas fa-users me-1"></i> Faculty DB
+                </a>
             </div>
         </div>
-    </nav>
+    </header>
 
-    <div class="container py-4">
 
-        <div class="text-center mb-4">
-            <h2 class="fw-bold"><i class="fas fa-calendar-check text-primary me-2"></i> Generated Timetable</h2>
-            <p class="text-muted">
-                {{ config.working_days | join(', ') }} &nbsp;|&nbsp;
-                {{ config.start_time }} – {{ config.end_time }} &nbsp;|&nbsp;
-                {{ config.num_classes }} class(es) &nbsp;|&nbsp;
-                {{ active_batches | length }} batch(es)
-            </p>
-        </div>
+    <!-- Main Schedule Pages (One paper view per generated class) -->
+    {% for class_id, days in schedules.items() %}
+    <div class="container-fluid px-3">
+        <div class="timetable-paper">
 
-        <!-- ═══════════════════════════════════════════════════════ -->
-        <!-- SECTION 1 : Theory Timetable (per class)              -->
-        <!-- ═══════════════════════════════════════════════════════ -->
-        <h4 class="section-title"><i class="fas fa-chalkboard me-2"></i>Theory / Lecture Schedule</h4>
+            <!-- 1. Institutional Header Block -->
+            <div class="text-center">
+                <div class="inst-motto">"Techno-Social Excellence"</div>
+                <div class="inst-name">{{ config.college_name }}</div>
+                <div class="dept-name">{{ config.dept_name }}</div>
+                <div><span class="timetable-title-badge">CLASS TIME TABLE</span></div>
+            </div>
 
-        {% for class_id, days in schedules.items() %}
-        <div class="table-card">
-            <h5 class="mb-3 text-primary"><i class="fas fa-users me-2"></i>{{ class_id }}</h5>
+            <!-- 2. Academic Metadata Ribbon -->
+            <div class="meta-strip">
+                <span><strong>Class Room:</strong> {{ primary_room }}</span>
+                <span><strong>{{ config.semester }}</strong></span>
+                <span><strong>{{ config.academic_year }}</strong></span>
+                <span><strong>{{ config.class_name }}</strong></span>
+                <span><strong>{{ config.division }}</strong></span>
+                <span><strong>{{ config.wef_date }}</strong></span>
+            </div>
+
+            <!-- 3. Master Academic Timetable Grid -->
             <div class="table-responsive">
-                <table class="table table-bordered text-center align-middle mb-0">
+                <table class="table-academic">
                     <thead>
                         <tr>
-                            <th style="min-width:110px;">Time</th>
-                            {% for day in config.working_days %}<th>{{ day }}</th>{% endfor %}
+                            <th class="time-col">
+                                <div style="font-size:0.8rem; color:#666;">Day</div>
+                                <div>Time</div>
+                            </th>
+                            {% for day in config.working_days %}
+                            <th style="min-width: 140px;">{{ day }}</th>
+                            {% endfor %}
                         </tr>
                     </thead>
                     <tbody>
                         {% for i in range(time_slots|length) %}
+                        {% set slot_meta = time_slots[i] %}
+
+                        {% if slot_meta.is_break %}
+                        <!-- Break / Recess Row (Spanning all day columns) -->
                         <tr>
-                            <td><strong>{{ time_slots[i].time }}</strong></td>
-                            {% if time_slots[i].is_break %}
-                                <td colspan="{{ config.working_days|length }}" class="slot-break">
-                                    <i class="fas fa-coffee me-1"></i>{{ time_slots[i].label }}
-                                </td>
-                            {% else %}
-                                {% for day in config.working_days %}
-                                {% set slot = schedules[class_id][day][i] %}
-                                {% if slot %}
-                                    {% if slot.type == 'free' %}
-                                    <td class="slot-free">Free</td>
+                            <td class="time-col">{{ slot_meta.time }}</td>
+                            <td colspan="{{ config.working_days|length }}" class="break-cell">
+                                <i class="fas fa-coffee me-1"></i> {{ slot_meta.label }}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <!-- Regular Lecture / Practical Slot Row -->
+                        <tr>
+                            <td class="time-col">
+                                <strong>{{ slot_meta.time }}</strong>
+                            </td>
+
+                            {% for day in config.working_days %}
+                            {% set cell = schedules[class_id][day][i] %}
+
+                            <td>
+                                {% if cell %}
+                                    {% if cell.type == 'theory' %}
+                                        <!-- Theory Lecture Format: Subject (Faculty Abbr) (Room) -->
+                                        <div class="theory-cell">
+                                            <div class="theory-subject">{{ cell.subject }} ({{ cell.abbr }})</div>
+                                            <div class="theory-meta">({{ cell.room }})</div>
+                                        </div>
+                                    {% elif cell.type == 'practical' %}
+                                        <!-- Practical Batches: A1, A2, A3, A4 parallel list -->
+                                        <div class="practical-block">
+                                            {% for b in cell.batches %}
+                                            <div class="batch-line batch-line-{{ b.batch }}" data-batch="{{ b.batch }}">
+                                                <span class="batch-tag">{{ b.batch }}:</span>
+                                                <span class="batch-sub">{{ b.subject }}</span>
+                                                <span class="batch-fac">({{ b.abbr }})</span>
+                                                <span class="batch-loc">({{ b.location }})</span>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% elif cell.type == 'free' %}
+                                        <span class="text-muted small">-</span>
                                     {% else %}
-                                    <td class="slot-theory">
-                                        <div class="subject-text">{{ slot.subject }}</div>
-                                        <div class="faculty-text">{{ slot.faculty }}</div>
-                                        <span class="badge bg-secondary abbr-badge">{{ slot.abbr }}</span>
-                                        <br><span class="badge bg-light text-dark" style="font-size:.7em;">{{ slot.room }}</span>
-                                    </td>
+                                        <span class="text-muted small">-</span>
                                     {% endif %}
                                 {% else %}
-                                    <td>-</td>
+                                    <span class="text-muted small">-</span>
                                 {% endif %}
-                                {% endfor %}
-                            {% endif %}
+                            </td>
+                            {% endfor %}
                         </tr>
+                        {% endif %}
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-        </div>
-        {% endfor %}
 
+            <!-- 4. Faculty & Subject Workload Load Summary Table -->
+            <div class="table-responsive">
+                <table class="table-workload">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" style="width: 28%; text-align: left; padding-left: 10px;">SUBJECT</th>
+                            <th rowspan="2" style="width: 44%; text-align: left; padding-left: 10px;">FACULTY NAME</th>
+                            <th colspan="3" style="width: 28%;">Load (In Hours/Week)</th>
+                        </tr>
+                        <tr>
+                            <th style="width: 9%;">Lectures</th>
+                            <th style="width: 10%;">Practicals</th>
+                            <th style="width: 9%;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in workload_summary %}
+                        <tr>
+                            <td><strong>{{ row.subject }}</strong></td>
+                            <td>
+                                <strong>{{ row.abbr }}:</strong> {{ row.name }}
+                                {% if row.batches %}
+                                <span style="font-size: 0.75rem; color:#555;">(Batches: {{ row.batches|join(', ') }})</span>
+                                {% endif %}
+                            </td>
+                            <td class="center">{{ row.theory_hours if row.theory_hours > 0 else '-' }}</td>
+                            <td class="center">{{ row.practical_hours if row.practical_hours > 0 else '-' }}</td>
+                            <td class="center font-monospace fw-bold">{{ row.total_hours }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr class="totals-row">
+                            <td colspan="2" style="text-align: right; padding-right: 15px;">TOTAL LOAD:</td>
+                            <td class="center">{{ workload_totals.lectures }}</td>
+                            <td class="center">{{ workload_totals.practicals }}</td>
+                            <td class="center font-monospace">{{ workload_totals.total }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-        <!-- ═══════════════════════════════════════════════════════ -->
-        <!-- SECTION 2 : Practical Schedule (per batch)            -->
-        <!-- ═══════════════════════════════════════════════════════ -->
-        <h4 class="section-title mt-4"><i class="fas fa-flask me-2"></i>Practical / Tutorial Schedule (Batch-wise)</h4>
+            <!-- 5. Reading Note & Official Signatures -->
+            <div class="reading-note">
+                Note: Read Time Table in format : (Subject) (Faculty) (Location)
+            </div>
 
-        <!-- Batch tab pills -->
-        <div class="nav-pills-wrap mb-3">
-            <ul class="nav nav-pills flex-wrap" id="batchTabs" role="tablist">
-                {% for batch in active_batches %}
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link {% if loop.first %}active{% endif %}"
-                            id="tab-{{ batch }}"
-                            data-bs-toggle="pill"
-                            data-bs-target="#pane-{{ batch }}"
-                            type="button" role="tab">
-                        Batch {{ batch }}
-                    </button>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
+            <div class="signatures-row">
+                <div class="signature-block">
+                    <div class="signature-line"></div>
+                    <div>Co-ordinator</div>
+                    <div style="font-size: 0.85rem;">Time Table</div>
+                </div>
 
-        <div class="tab-content" id="batchTabContent">
-            {% for batch in active_batches %}
-            <div class="tab-pane fade {% if loop.first %}show active{% endif %}"
-                 id="pane-{{ batch }}" role="tabpanel">
-                <div class="table-card">
-                    <h5 class="mb-3" style="color:#198754;">
-                        <i class="fas fa-users me-2"></i>Practical Batch {{ batch }}
-                    </h5>
-                    <div class="table-responsive">
-                        <table class="table table-bordered text-center align-middle mb-0">
-                            <thead class="batch-header">
-                                <tr>
-                                    <th style="min-width:160px;">Time Slot</th>
-                                    {% for day in config.working_days %}<th>{{ day }}</th>{% endfor %}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% set max_rows = namespace(val=0) %}
-                                {% for day in config.working_days %}
-                                    {% if batch_schedules[batch][day]|length > max_rows.val %}
-                                        {% set max_rows.val = batch_schedules[batch][day]|length %}
-                                    {% endif %}
-                                {% endfor %}
-
-                                {% for row_i in range(max_rows.val) %}
-                                <tr>
-                                    <!-- Time from the first day's slot -->
-                                    <td>
-                                        {% set first_day = config.working_days[0] %}
-                                        {% if batch_schedules[batch][first_day][row_i] is defined %}
-                                            <strong>{{ batch_schedules[batch][first_day][row_i].time }}</strong>
-                                        {% else %}
-                                            -
-                                        {% endif %}
-                                    </td>
-                                    {% for day in config.working_days %}
-                                        {% if batch_schedules[batch][day][row_i] is defined %}
-                                            {% set ps = batch_schedules[batch][day][row_i] %}
-                                            <td class="slot-practical">
-                                                <div class="subject-text">{{ ps.subject }}</div>
-                                                <div class="faculty-text">{{ ps.faculty }}</div>
-                                                <span class="badge bg-success abbr-badge">{{ ps.abbr }}</span>
-                                                <br><span class="badge bg-light text-dark" style="font-size:.7em;">{{ ps.lab }}</span>
-                                            </td>
-                                        {% else %}
-                                            <td>-</td>
-                                        {% endif %}
-                                    {% endfor %}
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="signature-block">
+                    <div class="signature-line"></div>
+                    <div>HOD</div>
+                    <div style="font-size: 0.85rem;">{{ config.dept_name }}</div>
                 </div>
             </div>
-            {% endfor %}
+
         </div>
-
-
-        <!-- Buttons -->
-        <div class="btn-group-custom text-center mt-4 mb-5">
-            <button onclick="window.print()" class="btn btn-success me-2">
-                <i class="fas fa-print me-1"></i> Print / Save PDF
-            </button>
-            <a href="/" class="btn btn-primary me-2">
-                <i class="fas fa-redo me-1"></i> Generate Again
-            </a>
-            <a href="/faculty" class="btn btn-outline-secondary">
-                <i class="fas fa-users me-1"></i> Manage Faculty
-            </a>
-        </div>
-
     </div>
+    {% endfor %}
 
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Interactive Batch Highlighting Script -->
+    <script>
+        function filterBatch(batchName) {
+            // Update button active states
+            const buttons = document.querySelectorAll('.batch-filter-btn');
+            buttons.forEach(btn => {
+                if (btn.innerText.trim() === batchName || (batchName === 'ALL' && btn.innerText.trim() === 'All')) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Toggle batch-line highlights
+            const allBatchLines = document.querySelectorAll('.batch-line');
+            allBatchLines.forEach(line => {
+                if (batchName === 'ALL') {
+                    line.classList.remove('highlighted-batch');
+                    line.style.opacity = '1';
+                } else {
+                    const lineBatch = line.getAttribute('data-batch');
+                    if (lineBatch === batchName) {
+                        line.classList.add('highlighted-batch');
+                        line.style.opacity = '1';
+                    } else {
+                        line.classList.remove('highlighted-batch');
+                        line.style.opacity = '0.35';
+                    }
+                }
+            });
+        }
+    </script>
 </body>
+
 </html>

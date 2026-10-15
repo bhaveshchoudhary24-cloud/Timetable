@@ -273,6 +273,47 @@
                 <!-- Left Column -->
                 <div class="col-lg-6">
 
+                    <!-- Institutional & Class Details -->
+                    <div class="config-card">
+                        <div class="card-header-custom">
+                            <i class="fas fa-university"></i> Institutional &amp; Class Header Details
+                        </div>
+                        <div class="card-body-custom">
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label class="form-label">College / Institute Name</label>
+                                    <input type="text" name="college_name" class="form-control"
+                                        value="Marathwada Mitra Mandal's Institute of Technology, Lohgaon Pune - 47">
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label">Department Name</label>
+                                    <input type="text" name="dept_name" class="form-control"
+                                        value="Department of Computer Engineering">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Academic Year</label>
+                                    <input type="text" name="academic_year" class="form-control" value="A.Y.2026-27">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Semester</label>
+                                    <input type="text" name="semester" class="form-control" value="Semester : 5">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Class</label>
+                                    <input type="text" name="class_name" class="form-control" value="Class: TE">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Division</label>
+                                    <input type="text" name="division" class="form-control" value="Division: A">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">With Effect From (w.e.f.)</label>
+                                    <input type="text" name="wef_date" class="form-control" value="w.e.f. - 01/07/2026">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Timing Configuration -->
                     <div class="config-card">
                         <div class="card-header-custom">
@@ -282,19 +323,16 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label for="startTime" class="form-label">College Start Time</label>
-                                    <!-- Added name attribute -->
                                     <input type="time" name="start_time" class="form-control" id="startTime"
-                                        value="09:00" required>
+                                        value="08:30" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="endTime" class="form-label">College End Time</label>
-                                    <!-- Added name attribute -->
-                                    <input type="time" name="end_time" class="form-control" id="endTime" value="16:00"
+                                    <input type="time" name="end_time" class="form-control" id="endTime" value="15:30"
                                         required>
                                 </div>
                                 <div class="col-md-12">
                                     <label for="lectureDuration" class="form-label">Lecture Duration (mins)</label>
-                                    <!-- Added name attribute -->
                                     <select class="form-select" name="lecture_duration" id="lectureDuration">
                                         <option value="45">45 Minutes</option>
                                         <option value="50">50 Minutes</option>
@@ -305,9 +343,8 @@
                                     <label for="practicalDuration" class="form-label">Practical Duration (mins)</label>
                                     <select class="form-select" name="practical_duration" id="practicalDuration">
                                         <option value="60">60 Minutes (1 Hour)</option>
-                                        <option value="75">75 Minutes</option>
-                                        <option value="90" selected>90 Minutes (1.5 Hours)</option>
-                                        <option value="120">120 Minutes (2 Hours)</option>
+                                        <option value="90">90 Minutes (1.5 Hours)</option>
+                                        <option value="120" selected>120 Minutes (2 Hours)</option>
                                     </select>
                                 </div>
                             </div>
@@ -326,9 +363,19 @@
                             <div id="breaksList">
                                 <div class="d-flex gap-2 mb-2 break-item">
                                     <input type="text" name="break_label[]" class="form-control"
+                                        placeholder="Label (e.g. Recess)" value="Short Recess">
+                                    <input type="time" name="break_start[]" class="form-control" value="10:30">
+                                    <input type="time" name="break_end[]" class="form-control" value="10:45">
+                                    <button class="btn btn-outline-danger" type="button"
+                                        onclick="this.parentElement.remove()">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="d-flex gap-2 mb-2 break-item">
+                                    <input type="text" name="break_label[]" class="form-control"
                                         placeholder="Label (e.g. Lunch)" value="Lunch Break">
-                                    <input type="time" name="break_start[]" class="form-control" value="13:00">
-                                    <input type="time" name="break_end[]" class="form-control" value="14:00">
+                                    <input type="time" name="break_start[]" class="form-control" value="12:45">
+                                    <input type="time" name="break_end[]" class="form-control" value="13:30">
                                     <button class="btn btn-outline-danger" type="button"
                                         onclick="this.parentElement.remove()">
                                         <i class="fas fa-times"></i>
