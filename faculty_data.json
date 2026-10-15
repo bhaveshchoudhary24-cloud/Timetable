@@ -1,1 +1,130 @@
-[]
+[
+    {
+        "name": "Prof. M. S. Jagtap",
+        "abbr": "MSJ",
+        "subject": "AI",
+        "theory_hours": 3,
+        "practical_hours": 8,
+        "practical_batches": ["A1", "A2", "A3", "A4"]
+    },
+    {
+        "name": "Dr. M. D. Salunke",
+        "abbr": "MDS",
+        "subject": "CN",
+        "theory_hours": 3,
+        "practical_hours": 8,
+        "practical_batches": ["A1", "A3", "A4"]
+    },
+    {
+        "name": "Dr. S. A. Agrawal",
+        "abbr": "SAA",
+        "subject": "CN",
+        "theory_hours": 0,
+        "practical_hours": 8,
+        "practical_batches": ["A1", "A3", "A4"]
+    },
+    {
+        "name": "Dr. J. P. Shinde",
+        "abbr": "JPS",
+        "subject": "CN",
+        "theory_hours": 0,
+        "practical_hours": 8,
+        "practical_batches": ["A2"]
+    },
+    {
+        "name": "Dr. S. K. Patil",
+        "abbr": "SKP",
+        "subject": "TOC",
+        "theory_hours": 3,
+        "practical_hours": 0,
+        "practical_batches": []
+    },
+    {
+        "name": "Dr. S. G. Rathod",
+        "abbr": "SGR",
+        "subject": "Elective-I",
+        "theory_hours": 3,
+        "practical_hours": 0,
+        "practical_batches": []
+    },
+    {
+        "name": "Dr. P. D. Dhamdhere",
+        "abbr": "PDD",
+        "subject": "Elective-I",
+        "theory_hours": 0,
+        "practical_hours": 0,
+        "practical_batches": []
+    },
+    {
+        "name": "Prof. U. B. Karanje",
+        "abbr": "UBK",
+        "subject": "Elective-I",
+        "theory_hours": 0,
+        "practical_hours": 8,
+        "practical_batches": ["A1", "A2", "A3", "A4"]
+    },
+    {
+        "name": "Prof. Barangale Shraddha",
+        "abbr": "BS",
+        "subject": "RoA",
+        "theory_hours": 0,
+        "practical_hours": 8,
+        "practical_batches": ["A1", "A2", "A3", "A4"]
+    },
+    {
+        "name": "Prof. Nutan Sarode",
+        "abbr": "NS",
+        "subject": "RoA",
+        "theory_hours": 0,
+        "practical_hours": 8,
+        "practical_batches": ["A3", "A4"]
+    },
+    {
+        "name": "Dr. S. S. Chaudhari",
+        "abbr": "SSC",
+        "subject": "OE",
+        "theory_hours": 2,
+        "practical_hours": 0,
+        "practical_batches": []
+    },
+    {
+        "name": "Dr. J. P. Shinde",
+        "abbr": "JPS",
+        "subject": "OE",
+        "theory_hours": 0,
+        "practical_hours": 0,
+        "practical_batches": []
+    },
+    {
+        "name": "Prof. T. S. Bhoye",
+        "abbr": "TSB",
+        "subject": "TS",
+        "theory_hours": 0,
+        "practical_hours": 8,
+        "practical_batches": ["A1"]
+    },
+    {
+        "name": "Prof. Y. P. Warke",
+        "abbr": "YPW",
+        "subject": "TS",
+        "theory_hours": 0,
+        "practical_hours": 8,
+        "practical_batches": ["A2"]
+    },
+    {
+        "name": "Prof. Barangale Shraddha",
+        "abbr": "BS",
+        "subject": "TS",
+        "theory_hours": 0,
+        "practical_hours": 8,
+        "practical_batches": ["A3"]
+    },
+    {
+        "name": "Prof. Nutan Sarode",
+        "abbr": "NS",
+        "subject": "TS",
+        "theory_hours": 0,
+        "practical_hours": 8,
+        "practical_batches": ["A4"]
+    }
+]

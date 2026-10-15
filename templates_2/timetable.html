@@ -3,159 +3,220 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generated Timetable</title>
-
-    <!-- Bootstrap + Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
     <style>
-        body {
-            background-color: #f4f7f6;
-            font-family: 'Inter', sans-serif;
-        }
+        body { background-color: #f4f7f6; font-family: 'Inter','Segoe UI',sans-serif; }
 
-        .header {
-            text-align: center;
-            margin: 30px 0;
-        }
-
-        .header h2 {
-            font-weight: 700;
-            color: #2c3e50;
+        .section-title {
+            font-weight: 700; color: #2c3e50; margin: 30px 0 15px;
+            border-left: 5px solid #4e73df; padding-left: 12px;
         }
 
         .table-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-            padding: 20px;
-            margin-bottom: 30px;
+            background: white; border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,.05); padding: 20px; margin-bottom: 30px;
         }
 
-        .table thead {
-            background-color: #4e73df;
-            color: white;
-        }
+        .table thead { background-color: #4e73df; color: white; }
 
-        .slot-break {
-            background-color: #ffeeba;
-            font-weight: 600;
-        }
+        .slot-break { background-color: #ffeeba; font-weight: 600; text-align: center; }
 
-        .btn-group-custom {
-            text-align: center;
-            margin-top: 20px;
+        .slot-theory { background-color: #eaf3ff; }
+        .slot-practical { background-color: #e8f8f0; }
+        .slot-free { background-color: #f5f5f5; color: #aaa; font-style: italic; }
+
+        .batch-header { background-color: #198754; color: white; }
+
+        .nav-pills .nav-link { color: #4e73df; font-weight: 500; border: 1px solid #dee2e6; margin-right: 5px; }
+        .nav-pills .nav-link.active { background-color: #4e73df; color: white; border-color: #4e73df; }
+
+        .abbr-badge { font-size: .75em; font-weight: 700; }
+        .subject-text { font-size: .9em; font-weight: 600; color: #2c3e50; }
+        .faculty-text { font-size: .8em; color: #6c757d; }
+
+        @media print {
+            .btn-group-custom, nav, .nav-pills-wrap { display: none !important; }
+            .table-card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
         }
     </style>
 </head>
 
 <body>
-
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom" style="box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom" style="box-shadow:0 2px 4px rgba(0,0,0,.1);">
         <div class="container">
-            <span class="navbar-brand">
-                <i class="fas fa-calendar-check text-primary"></i> Timetable Generator
-            </span>
+            <span class="navbar-brand"><i class="fas fa-calendar-check text-primary"></i> Timetable Generator</span>
             <div class="d-flex align-items-center gap-3">
-                <span class="text-muted">
-                    <i class="fas fa-user-circle"></i> {{ session.username }}
-                </span>
-                <a href="/logout" class="btn btn-sm btn-outline-danger">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </a>
+                <a href="/faculty" class="btn btn-sm btn-outline-primary"><i class="fas fa-users me-1"></i>Faculty</a>
+                <span class="text-muted"><i class="fas fa-user-circle"></i> {{ session.username }}</span>
+                <a href="/logout" class="btn btn-sm btn-outline-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </div>
         </div>
     </nav>
 
-    <div class="container">
+    <div class="container py-4">
 
-        <div class="header">
-            <h2><i class="fas fa-calendar-check text-primary"></i> Generated Timetable</h2>
-            <p class="text-muted">Automatically generated multi-class schedule</p>
+        <div class="text-center mb-4">
+            <h2 class="fw-bold"><i class="fas fa-calendar-check text-primary me-2"></i> Generated Timetable</h2>
+            <p class="text-muted">
+                {{ config.working_days | join(', ') }} &nbsp;|&nbsp;
+                {{ config.start_time }} – {{ config.end_time }} &nbsp;|&nbsp;
+                {{ config.num_classes }} class(es) &nbsp;|&nbsp;
+                {{ active_batches | length }} batch(es)
+            </p>
         </div>
 
-        <!-- Loop through each class -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- SECTION 1 : Theory Timetable (per class)              -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <h4 class="section-title"><i class="fas fa-chalkboard me-2"></i>Theory / Lecture Schedule</h4>
+
         {% for class_id, days in schedules.items() %}
-
         <div class="table-card">
-            <h5 class="mb-3 text-primary"><i class="fas fa-users"></i> {{ class_id }}</h5>
-
+            <h5 class="mb-3 text-primary"><i class="fas fa-users me-2"></i>{{ class_id }}</h5>
             <div class="table-responsive">
-                <table class="table table-bordered text-center align-middle">
-
+                <table class="table table-bordered text-center align-middle mb-0">
                     <thead>
                         <tr>
-                            <th>Time</th>
-                            {% for day in config.working_days %}
-                            <th>{{ day }}</th>
-                            {% endfor %}
+                            <th style="min-width:110px;">Time</th>
+                            {% for day in config.working_days %}<th>{{ day }}</th>{% endfor %}
                         </tr>
                     </thead>
-
                     <tbody>
                         {% for i in range(time_slots|length) %}
                         <tr>
                             <td><strong>{{ time_slots[i].time }}</strong></td>
-
-                            {% for day in config.working_days %}
-                            {% set slot = schedules[class_id][day][i] %}
-
                             {% if time_slots[i].is_break %}
-                            <td class="slot-break">{{ time_slots[i].label }}</td>
+                                <td colspan="{{ config.working_days|length }}" class="slot-break">
+                                    <i class="fas fa-coffee me-1"></i>{{ time_slots[i].label }}
+                                </td>
                             {% else %}
-                            <td>
-                                {{ slot.subject }}<br>
-                                <small class="text-muted">{{ slot.faculty }}</small><br>
-                                <span class="badge bg-secondary">{{ slot.room }}</span>
-                            </td>
+                                {% for day in config.working_days %}
+                                {% set slot = schedules[class_id][day][i] %}
+                                {% if slot %}
+                                    {% if slot.type == 'free' %}
+                                    <td class="slot-free">Free</td>
+                                    {% else %}
+                                    <td class="slot-theory">
+                                        <div class="subject-text">{{ slot.subject }}</div>
+                                        <div class="faculty-text">{{ slot.faculty }}</div>
+                                        <span class="badge bg-secondary abbr-badge">{{ slot.abbr }}</span>
+                                        <br><span class="badge bg-light text-dark" style="font-size:.7em;">{{ slot.room }}</span>
+                                    </td>
+                                    {% endif %}
+                                {% else %}
+                                    <td>-</td>
+                                {% endif %}
+                                {% endfor %}
                             {% endif %}
-                            {% endfor %}
                         </tr>
                         {% endfor %}
                     </tbody>
-
                 </table>
             </div>
         </div>
-
         {% endfor %}
 
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- SECTION 2 : Practical Schedule (per batch)            -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <h4 class="section-title mt-4"><i class="fas fa-flask me-2"></i>Practical / Tutorial Schedule (Batch-wise)</h4>
+
+        <!-- Batch tab pills -->
+        <div class="nav-pills-wrap mb-3">
+            <ul class="nav nav-pills flex-wrap" id="batchTabs" role="tablist">
+                {% for batch in active_batches %}
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if loop.first %}active{% endif %}"
+                            id="tab-{{ batch }}"
+                            data-bs-toggle="pill"
+                            data-bs-target="#pane-{{ batch }}"
+                            type="button" role="tab">
+                        Batch {{ batch }}
+                    </button>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="tab-content" id="batchTabContent">
+            {% for batch in active_batches %}
+            <div class="tab-pane fade {% if loop.first %}show active{% endif %}"
+                 id="pane-{{ batch }}" role="tabpanel">
+                <div class="table-card">
+                    <h5 class="mb-3" style="color:#198754;">
+                        <i class="fas fa-users me-2"></i>Practical Batch {{ batch }}
+                    </h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center align-middle mb-0">
+                            <thead class="batch-header">
+                                <tr>
+                                    <th style="min-width:160px;">Time Slot</th>
+                                    {% for day in config.working_days %}<th>{{ day }}</th>{% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% set max_rows = namespace(val=0) %}
+                                {% for day in config.working_days %}
+                                    {% if batch_schedules[batch][day]|length > max_rows.val %}
+                                        {% set max_rows.val = batch_schedules[batch][day]|length %}
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% for row_i in range(max_rows.val) %}
+                                <tr>
+                                    <!-- Time from the first day's slot -->
+                                    <td>
+                                        {% set first_day = config.working_days[0] %}
+                                        {% if batch_schedules[batch][first_day][row_i] is defined %}
+                                            <strong>{{ batch_schedules[batch][first_day][row_i].time }}</strong>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    {% for day in config.working_days %}
+                                        {% if batch_schedules[batch][day][row_i] is defined %}
+                                            {% set ps = batch_schedules[batch][day][row_i] %}
+                                            <td class="slot-practical">
+                                                <div class="subject-text">{{ ps.subject }}</div>
+                                                <div class="faculty-text">{{ ps.faculty }}</div>
+                                                <span class="badge bg-success abbr-badge">{{ ps.abbr }}</span>
+                                                <br><span class="badge bg-light text-dark" style="font-size:.7em;">{{ ps.lab }}</span>
+                                            </td>
+                                        {% else %}
+                                            <td>-</td>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+
         <!-- Buttons -->
-        <div class="btn-group-custom">
-            <button onclick="downloadPDF()" class="btn btn-success me-2">
-                <i class="fas fa-file-pdf"></i> Download as PDF
+        <div class="btn-group-custom text-center mt-4 mb-5">
+            <button onclick="window.print()" class="btn btn-success me-2">
+                <i class="fas fa-print me-1"></i> Print / Save PDF
             </button>
             <a href="/" class="btn btn-primary me-2">
-                <i class="fas fa-redo"></i> Generate Again
+                <i class="fas fa-redo me-1"></i> Generate Again
+            </a>
+            <a href="/faculty" class="btn btn-outline-secondary">
+                <i class="fas fa-users me-1"></i> Manage Faculty
             </a>
         </div>
 
     </div>
 
-    <!-- html2pdf Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-    <script>
-        function downloadPDF() {
-            // Get the container with the timetables
-            const element = document.querySelector('.container');
-            
-            // PDF options
-            const options = {
-                margin: 10,
-                filename: 'Timetable_' + new Date().toISOString().split('T')[0] + '.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
-            };
-
-            // Generate and download PDF
-            html2pdf().set(options).from(element).save();
-        }
-    </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

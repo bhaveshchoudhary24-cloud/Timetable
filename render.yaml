@@ -8,6 +8,12 @@ services:
     startCommand: gunicorn timetable_app:app
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.9
+        value: "3.11.9"
       - key: SECRET_KEY
         generateValue: true
+      - key: DATA_DIR
+        value: /data
+    disk:
+      name: faculty-data
+      mountPath: /data
+      sizeGB: 1
